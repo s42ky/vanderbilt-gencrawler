@@ -1,0 +1,39 @@
+================================================
+=            Audit logger plugin.
+= Author: Scott Yeskie
+=      (scott.k.yeskie@vanderbilt.edu)
+=
+= Logs all MySQL queries to a logfile (/tmp/rtlog.sql)
+= Except for a logging user 'logger'
+================================================
+
+
+
+Binary in bin/ compiled on linux x64 system for mysql 5.5.22
+If using binary only, skip to step 5.
+
+====================COMPILING===================
+  0. Download MySQL source. Unzip.
+  
+  1. Place the 4 files in plugin/audit_logger/
+      -audit_logger.c
+      -audit_logger.h
+      -plugin_audit.h
+      -CMakeLists.txt
+      
+  2. Open terminal in BUILD/ and run
+      $ cmake ..
+      $ make
+      
+  3. Navigate to the folder BUILD/plugin/audit_logger/
+  
+  4. Copy the adt_logger.so file to the MySQL include directory
+      (ie /usr/lib/mysql/plugin/ )
+      
+  5. Open mysql user and install the plugin with the following command:
+      mysql> INSTALL PLUGIN audit_logger SONAME 'adt_logger.so';
+      
+  6. Check /tmp/rtlog.sql and make sure it exists and is 777 permissions.
+  
+ (7. Optional) Add user 'logger' to MySQL
+	  Use this user for any queries the log processing program makes.
