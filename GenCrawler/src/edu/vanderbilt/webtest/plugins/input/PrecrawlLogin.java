@@ -244,6 +244,15 @@ public class PrecrawlLogin implements PreCrawlingPlugin {
 			}
 		} catch (SQLException err) {
 			LOGGER.error("SQL error.", err);
+		} finally {
+			if(conn!=null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
         
         LOGGER.info("UserDatabase selected user ID#"+userInfo.get("uid"));

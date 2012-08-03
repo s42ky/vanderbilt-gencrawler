@@ -57,7 +57,7 @@ public class CrawlDriver {
 		GeneralCrawling		//Main pass + SQL logging
 	};
 	
-	public static int[] levels = { 1, 2 };
+	public static int[] levels = { 0, 1, 2 };
 	public static int passesPerLevel = 3;
 	
 	//General crawler configuration.
@@ -78,8 +78,11 @@ public class CrawlDriver {
 		 * log4j Configuration
 		 * Setup logging levels		
 		 */
+		
+		LOGGER.setLevel(Level.INFO);
+		
 		Logger.getLogger("com.crawljax").setLevel(Level.WARN);
-		//Logger.getLogger("com.crawljax.core.CrawljaxController").setLevel(Level.INFO);
+		Logger.getLogger("com.crawljax.core.CrawljaxController").setLevel(Level.INFO);
 		
 		//Logger.getLogger("com.crawljax.core").setLevel(Level.INFO);
 		Logger.getLogger("com.crawljax.core.state").setLevel(Level.INFO);
@@ -92,7 +95,7 @@ public class CrawlDriver {
 		//Logger.getLogger(ConstantParameterEstimator.class.toString()).setLevel(Level.DEBUG);
 		//Logger.getLogger(PageTreeVertixIdentifier.class.toString()).setLevel(Level.DEBUG);
 		Logger.getLogger(ParameterValueDomain.class.toString()).setLevel(Level.INFO);
-		Logger.getLogger("edu.vanderbilt.webtest.plugins.input").setLevel(Level.DEBUG);
+		Logger.getLogger("edu.vanderbilt.webtest.plugins.input").setLevel(Level.INFO);
 		//Logger.getLogger(CandidateElementExtractor.class.toString()).setLevel(Level.INFO);
 		//Logger.getLogger("com.crawljax.plugins").setLevel(Level.DEBUG);
 		//Logger.getLogger("com.crawljax.core.state").setLevel(Level.INFO);
@@ -114,6 +117,8 @@ public class CrawlDriver {
 	
 	public static void run() throws CrawljaxException, ConfigurationException {
 		BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%-5p [%t] %C{1}: %m%n")));
+		
+		boolean rerun = false;
 		
 		//Configure once plugins
 		InputFiller ifp = new InputFiller(projectDir+"InputSpec.xml");
@@ -188,15 +193,26 @@ public class CrawlDriver {
 				try {
 					BasicConfigurator.configure(new FileAppender(
 							new PatternLayout("%-7r %-5p %35.35C{2}: %m%n"),
-										projectDir+"crawltrace.log", false));
-					
+										projectDir+"crawltrace.log", rerun));
+					rerun = true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				
+				String brk = "==================================================================";
+				LOGGER.info("\n\n"+brk+brk);
+				LOGGER.info("Started logging for level "+level+" iteration "+i+"\n");
+				
 				CrawljaxController crawljax = new CrawljaxController(configuration);
 				//Go
 				loginPlugin.getNewUser();
+				
+				try {
+					LOGGER.info("Controller:" +crawljax.toString());
+					LOGGER.info(crawljax.getSession().getInitialState().getUnprocessedCandidateElements().toString());
+				} catch(Exception e) {
+					LOGGER.info("Couldn't get UPCE. Good.");
+				}
 				crawljax.run();
 			}
 		}

@@ -45,6 +45,15 @@ public class PageTreeCloneDetector implements DetectCloneStatePlugin, OnAddState
 		return stateVertixLookup.get(pageKey, paramKey);
 	}
 	
+	public PageTreeCloneDetector() {
+		reset();
+	}
+	
+	public static void reset() {
+		//Use between calls
+		stateVertixLookup.clear();
+	}
+	
 	private StateFlowGraph lastGraph = null;
 	/*
 	 * (non-Javadoc)

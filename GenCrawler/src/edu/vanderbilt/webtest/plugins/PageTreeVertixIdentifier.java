@@ -37,18 +37,16 @@ public class PageTreeVertixIdentifier implements StateVertixIdentifier {
 	private StateVertix _parent;
 	
 	public PageTreeVertixIdentifier() {
-		LOGGER.setLevel(Level.DEBUG);
 	}
 	
 	public PageTreeVertixIdentifier(double revisitChance) {
-		LOGGER.setLevel(Level.DEBUG);
 		revisitProbability = revisitChance;
 		if(revisitChance>1.0) { 
-			LOGGER.error("Revisit chance out of bounds. Must be [0.0, 1.0].");
+			LOGGER.warn("Revisit chance out of bounds. Must be [0.0, 1.0].");
 			revisitProbability=1.0;
 		}
 		if(revisitChance<0.0) { 
-			LOGGER.error("Revisit chance out of bounds. Must be [0.0, 1.0].");
+			LOGGER.warn("Revisit chance out of bounds. Must be [0.0, 1.0].");
 			revisitProbability=0.0;
 		}
 		
@@ -58,7 +56,7 @@ public class PageTreeVertixIdentifier implements StateVertixIdentifier {
 	private HashMultimap<String,String> parameterValues = HashMultimap.create();
 	private String parameterlessLookupString = null;
 	
-	private static CandidateElementExtractor extractor = null;
+	private CandidateElementExtractor extractor = null;
 	
 	public void addParameter(String lookupString, String value) {
 		parameterValues.put(lookupString, value);
