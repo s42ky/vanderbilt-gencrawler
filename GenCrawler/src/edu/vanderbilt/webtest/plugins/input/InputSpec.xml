@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<input_specification>
+	<!-- Define and configure plugins -->
+	<plugins>
+		<plugin name="UserLoginDB">
+			<param name = "filepath" val="/srv/logging/" />
+		</plugin>
+	</plugins>
+	
+	<!-- Add input lists -->
+	<lists>
+		<list name="users" type="random">
+			<value>Name1</value>
+			<value>Name2</value>
+			<value>Name3</value>
+		</list>
+	</lists>
+	
+	<!-- Define inputs -->
+	<inputs>
+		<!-- Syntax:
+		<input		One of Name or ID is required
+			name="" 	Name of field to look for
+			id=""		ID of field to look for
+			valtype=""	Type of value. Defaults to 'text'.
+				Others include 'list' or name of plugin.
+				Priority: Configured plugins > lists > unconfigured plugins > text
+				Will throw error and default to text if can't find plugin or list
+			value=""	If valtype is 'text', the value to enter
+					If list, it's the listname
+					Otherwise, it's a parameter passed to the plugin
+					
+			><form_attr     restrictive element(s) for what form the input is in
+				name=""		Name of the attribute (eg 'href', 'class', 'name', 'method')
+				value=""/>	Value to filter the attribute on (eg, all forms with name 'form1')
+				
+		</input> Repeat for each input.
+		-->
+		
+		<!-- Forgot email form -->
+		<!-- <input name="email" valtype = "plugin" value="UserLoginDB" arg="email">
+			<form_attr name="action" value="http://localhost/scarf/forgot.php" />
+			<form_attr name="method" value="post" />
+		</input>-->
+		
+		<!-- Login form -->
+		<!-- 
+		<input name="email" valtype = "plugin"  value="UserLoginDB" arg="email">
+			<form_attr name="action" value="http://localhost/scarf/login.php" />
+		</input>
+		
+		<input name="password" valtype = "plugin"  value="UserLoginDB" arg="password">
+			<form_attr name="action" value="http://localhost/scarf/login.php" />
+		 </input>
+		 -->
+		
+		<!-- Register form -->
+		<!--
+		<input name="email" valtype="plugin" value="UserLoginDB" arg="email">
+			<form_attr name="action" value="http://localhost/scarf/register.php" />
+		</input>
+		<input name="email2" valtype="plugin" value="UserLoginDB" arg="email">
+			<form_attr name="action" value="http://localhost/scarf/register.php" />
+		</input>
+		<input name="firstname" valtype="plugin" value="UserLoginDB" arg="first_name">
+			<form_attr name="action" value="http://localhost/scarf/register.php" />
+		</input>
+		<input name="lastname" valtype="plugin" value="UserLoginDB" arg="last_name">
+			<form_attr name="action" value="http://localhost/scarf/register.php" />
+		</input>
+		<input name="affiliation" valtype="plugin" value="UserLoginDB" arg="organization">
+			<form_attr name="action" value="http://localhost/scarf/register.php" />
+		</input>-->
+	</inputs>
+</input_specification>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<login_specification>
+    <database app_table="scarf">
+        <login user="crawler" password="j3ExpHYAKWue5Y5m" />
+    </database>
+
+    <inputs>
+        <!-- 
+            name - name of form element
+            field - column name in database
+         -->
+        <input name="email" field="email" />
+        <input name="password" field="password" />
+    
+    </inputs>
+</login_specification>
