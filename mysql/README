@@ -1,0 +1,8 @@
+setup for scarf + main users.
+
+Make sure to add user for the database (and/or update the configuration in LoginSpec.xml)
+Login info as default:
+  User: crawler
+  Pass: j3ExpHYAKWue5Y5m
+ 
+
