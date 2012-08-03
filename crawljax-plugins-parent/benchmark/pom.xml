@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.crawljax.plugins</groupId>
+    <artifactId>crawljax-plugins-parent</artifactId>
+    <version>1.9</version>
+  </parent>
+
+  <artifactId>benchmark</artifactId>
+  <version>${crawljaxplugins.head.version}</version>
+  <packaging>jar</packaging>
+  <name>Benchmark</name>
+  <description>
+		Make graphs of the running time, used memory, duplicate states.
+	</description>
+  <url>http://crawljax.com/plugins/plugin-benchmark/</url>
+  <inceptionYear>2009-2010</inceptionYear>
+
+  <developers>
+    <developer>
+      <id>stefan</id>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.crawljax</groupId>
+      <artifactId>crawljax</artifactId>
+      <version>${crawljax.head.version}</version>
+      <type>jar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>classmexer</groupId>
+      <artifactId>classmexer</artifactId>
+      <version>0.03</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javaplot</groupId>
+      <artifactId>javaplot</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+
+  </dependencies>
+</project>

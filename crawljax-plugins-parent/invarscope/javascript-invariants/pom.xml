@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.crawljax.plugins</groupId>
+		<artifactId>crawljax-plugins-parent</artifactId>
+		<version>1.9</version>		
+	</parent>
+	<version>1.9-SNAPSHOT</version>
+	<artifactId>invarscope-javascript</artifactId>
+	<name>Automatic JavaScript Invariants</name>
+	<description>
+		Detects and checks JavaScript invariants automatically.
+	</description>
+
+	<developers>
+		<developer>
+			<id>frank</id>
+			<name>Frank Groeneveld</name>
+			<email>frankgroeneveld@gmail.com</email>
+			<url>http://techfield.org/</url>
+			<organization>SWERL, TU Delft</organization>
+			<organizationUrl>http://swerl.tudelft.nl</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.crawljax</groupId>
+			<artifactId>crawljax</artifactId>
+			<version>${crawljax.head.version}</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.crawljax.plugins</groupId>
+			<artifactId>errorreport</artifactId>
+			<version>1.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.crawljax.plugins</groupId>
+			<artifactId>webscarabwrapper</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mit</groupId>
+			<artifactId>daikon</artifactId>
+			<version>custom-20100427</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>20100427</version>
+		</dependency>
+
+
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>*.js</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+
+</project>
