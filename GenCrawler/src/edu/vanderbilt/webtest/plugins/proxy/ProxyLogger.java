@@ -30,7 +30,6 @@ import org.owasp.webscarab.model.Request;
 import org.owasp.webscarab.model.Response;
 import org.owasp.webscarab.plugin.proxy.ProxyPlugin;
 
-import edu.vanderbilt.iscope.util.SessionInspector;
 import edu.vanderbilt.webtest.crawl.CrawlDriver;
 
 public class ProxyLogger extends ProxyPlugin {
