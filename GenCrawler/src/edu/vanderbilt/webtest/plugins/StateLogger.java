@@ -13,10 +13,19 @@ import edu.vanderbilt.webtest.model.visitors.StringVisitor;
 import edu.vanderbilt.webtest.model.visitors.StringVisitorIgnoreValues;
 
 public class StateLogger implements OnNewStatePlugin {
-
+    private final String basedir;
+    
+    public StateLogger(String logdir) {
+    	basedir = logdir;
+    	
+    	File dir = new File(basedir);
+        if(!dir.exists()) dir.mkdir();
+    }
+    
     void OnNewStatePlugin() {
         //Clear files
         File dir = new File(basedir);
+        
         for(File f : dir.listFiles()) {
             String fn = f.getName();
             if(fn.endsWith(".log"))
@@ -26,11 +35,7 @@ public class StateLogger implements OnNewStatePlugin {
         //BufferedWriter bw = new BufferedWriter(new FileWriter(basedir+"allstates.log", false));
         //bw.write("\n");
         //bw.close();
-        
-        //TODO make Audit_Logger initialize the log file (and chmod the damn thing)
     }
-        
-    private String basedir = "/srv/logger/states/";
 	
 	public void onNewState(CrawlSession session) {
 		StateVertix state = session.getCurrentState();
