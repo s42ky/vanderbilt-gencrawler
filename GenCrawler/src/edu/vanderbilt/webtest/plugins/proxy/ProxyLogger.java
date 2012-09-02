@@ -12,67 +12,44 @@
 
 package edu.vanderbilt.webtest.plugins.proxy;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.owasp.webscarab.httpclient.HTTPClient;
-import org.owasp.webscarab.model.HttpUrl;
 import org.owasp.webscarab.model.Request;
 import org.owasp.webscarab.model.Response;
 import org.owasp.webscarab.plugin.proxy.ProxyPlugin;
 
 import edu.vanderbilt.webtest.crawl.CrawlDriver;
+import edu.vanderbilt.webtest.util.SessionInspector;
+import edu.vanderbilt.webtest.util.SqlLogger;
 
 public class ProxyLogger extends ProxyPlugin {
 	public final Logger LOGGER = Logger.getLogger(ProxyLogger.class.getName());
 	
 	SessionInspector _inspector;
 	
-	private static Boolean sql_input_log_ready = false;
-	
 	private static String workingDir = CrawlDriver.loggingDir;
 	private static String project = CrawlDriver.project;
 	//private static String dbname = CrawlDriver.dbname;
 	private static String traceDir = workingDir + project + "/";
-	private static String sqlLog = CrawlDriver.sqlLog;
-
-	private static BufferedReader input;
-	
-	private static Request lastRequest = null;
-	private static String lastRequestSession = null;
-	private static String lastRequestSID = null;
 	
 	public static List<String> lastSelectQueries = new ArrayList<String>();
+	
+	private static SqlLogger sqlLogger = new SqlLogger(CrawlDriver.sqlLog);
 	
 	public ProxyLogger()  {
 		LOGGER.setLevel(Level.INFO);
 		LOGGER.info("Query logger startup...");
 		//Startup
-		try {
-			input = new BufferedReader(new FileReader(sqlLog));
-		
-			_inspector = new SessionInspector();
-			
-			while (input.readLine() != null) {
-				//Skip through lines already existing in log
-				continue;
-			}
-			sql_input_log_ready = true;
-			
-		} catch(IOException e) {
-			e.printStackTrace();
-			sql_input_log_ready = false;
-		}
-
+		_inspector = new SessionInspector();
 	}
 
 	@Override
@@ -128,10 +105,6 @@ public class ProxyLogger extends ProxyPlugin {
     		String session = _inspector.getSession(ssindex);
     		String time = String.valueOf(System.currentTimeMillis());
     		
-    		//Cache values for SqlLogger   
-    	    lastRequestSID = ssindex;
-    	    lastRequestSession = session;
-    		
     		BufferedWriter bw = new BufferedWriter(new FileWriter(traceDir + project + ".log", true));
     		bw.write("[REQUEST]["+method+"][SCRIPT]["+script+"][SESSION]["+session+"][TIMESTAMP]["+time+"][PARA][");
     		LOGGER.debug("[REQUEST]["+method+"][SCRIPT]["+script+"][SESSION]["+session+"][TIMESTAMP]["+time+"][PARA][");
@@ -145,41 +118,18 @@ public class ProxyLogger extends ProxyPlugin {
             bw.write("]\n");
             bw.close();
     		
-    		//*
-    		Request notify_server = new Request();
-    		notify_server.setMethod("POST");
-    		notify_server.setVersion("HTTP/1.1");
-    		notify_server.setHeader("host", "localhost:8080");
-    		notify_server.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    		notify_server.setURL(new HttpUrl("http://localhost:8080/iScope/Portal?method=" + method + "&script=" + script));
-    		
-    		ByteArrayOutputStream content = new ByteArrayOutputStream();
-    		try {
-    			if (request.getContent().length != 0) {
-                    content.write(request.getContent());
-                    content.write(("&").getBytes());
-                }
-    			LOGGER.debug("session="+session+"&timestamp="+time+"&sid="+ssindex);
-                content.write(("session="+session+"&timestamp="+time+"&sid="+ssindex).getBytes());
-            } catch (IOException e){
-            	e.printStackTrace();
-    		}
-    		notify_server.setHeader("Content-Length", Integer.toString(content.size()));
-    		notify_server.setContent(content.toByteArray());
 			
-    		//HTTPClient log_client = HTTPClientFactory.getInstance().getHTTPClient();
-    		//log_client.fetchResponse(notify_server);
-    		//*/
-    		
+			sqlLogger.processRequest(request);
+            
 			//Flush log to make sure nothing new
-			parseLog();
-			
+			sqlLogger.flushLog();
 			lastSelectQueries.clear();
-			//Cache request parameters
-			lastRequest = request;
 			Response response = this.client.fetchResponse(request);
-			parseLog();
 			
+			Vector<String> queries = sqlLogger.getQueriesLogged();
+			for(String query : queries) {
+				writeLog(query);
+			}
 			return response;
 		}
 	}
@@ -187,68 +137,13 @@ public class ProxyLogger extends ProxyPlugin {
 	
 	private void writeLog(String query) throws IOException {
 		if(query.length()==0) return; //Don't log empty strings
-		
-		String script = (lastRequest==null)?"null":lastRequest.getURL().toString();
-		String session = "null";
-		String session_req = lastRequestSession;
-		String sid = lastRequestSID;
-		
-		if (sid!= null && sid!="null") {
-		    session = _inspector.inspect(sid);
-		}
-		
-	    if(! session.equals(session_req)) {
-	    	System.err.println("Session values have changed.");
-	    }
-		
-	    String time = String.valueOf(System.currentTimeMillis());
-	    
-	    //Add SELECT queries for proxy use
+
 	    if(query.toUpperCase().startsWith("SELECT"))
 	    	lastSelectQueries.add(query);
-	    
-	    
-	    
-    	BufferedWriter bw = new BufferedWriter(new FileWriter(traceDir + project + ".log", true));
-		if (session != null && query != null && script != null) {    // QUERY + SCRIPT + SESSION + TIME.
-			bw.write("[QUERY][" + query + "]");
-			bw.write("[SCRIPT][" + script + "]");
-			bw.write("[SESSION][" + session + "]");
-			if (time != null) bw.write("[TIMESTAMP][" + time + "]");
-			bw.write("\n");
-			LOGGER.debug(project + " " + query + " time " + time);
-		}
+
+	    BufferedWriter bw = new BufferedWriter(new FileWriter(traceDir + project + ".log", true));
+		bw.write(query+"\n");
 		bw.close();
-	}
-	
-	private void parseLog() {
-		if(!sql_input_log_ready) return;
-		
-		String line = null;
-		Boolean needSpace = false;
-		
-		Boolean buildingQuery = false;
-		String curQuery = "";
-		
-		try {
-			while ((line = input.readLine()) != null) {
-				if(line.equals("{")) {
-					buildingQuery = true;
-					needSpace = false;
-					curQuery = "";
-				} else if(line.equals("}")) {
-					buildingQuery = false;
-					writeLog(curQuery);
-				} else if(buildingQuery) {
-					if(needSpace) curQuery += " ";
-					curQuery += line;
-					needSpace = (line.length()>0) && (!line.substring(line.length()-1).equals(" "));
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			sql_input_log_ready = false;
-		}
 	}
 }
 
