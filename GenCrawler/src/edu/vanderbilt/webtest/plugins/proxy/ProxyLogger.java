@@ -208,21 +208,17 @@ public class ProxyLogger extends ProxyPlugin {
 	    	lastSelectQueries.add(query);
 	    
 	    
-	    if (CrawlDriver.mode == CrawlDriver.Mode.GeneralCrawling) {
-	    	BufferedWriter bw = new BufferedWriter(new FileWriter(traceDir + project + ".log", true));
-			if (session != null && query != null && script != null) {    // QUERY + SCRIPT + SESSION + TIME.
-				bw.write("[QUERY][" + query + "]");
-				bw.write("[SCRIPT][" + script + "]");
-				bw.write("[SESSION][" + session + "]");
-				if (time != null) bw.write("[TIMESTAMP][" + time + "]");
-				bw.write("\n");
-				LOGGER.debug(project + " " + query + " time " + time);
-			}
-			bw.close();
-	    }/* else if (Portal.getMode() == 1) {
-	    	QueryMessage message = new QueryMessage(query, script, session);
-	    	TestingEngine.addQueryMessage(message);
-	    }//*/
+	    
+    	BufferedWriter bw = new BufferedWriter(new FileWriter(traceDir + project + ".log", true));
+		if (session != null && query != null && script != null) {    // QUERY + SCRIPT + SESSION + TIME.
+			bw.write("[QUERY][" + query + "]");
+			bw.write("[SCRIPT][" + script + "]");
+			bw.write("[SESSION][" + session + "]");
+			if (time != null) bw.write("[TIMESTAMP][" + time + "]");
+			bw.write("\n");
+			LOGGER.debug(project + " " + query + " time " + time);
+		}
+		bw.close();
 	}
 	
 	private void parseLog() {
