@@ -38,7 +38,7 @@ public class CrawlDriver {
 	public static final Logger LOGGER = Logger.getLogger(CrawlDriver.class.getName());
 	
 	//Project configuration
-	public static final String loggingDir = "/srv/logger/";
+	public static final String loggingDir = "/home/sky/logger/";
 	public static final String host = "localhost";
 	public static final String project = "scarf";
 	public static final String projectDir = loggingDir+project+"/";
@@ -99,9 +99,11 @@ public class CrawlDriver {
 		//Logger.getLogger(CandidateElementExtractor.class.toString()).setLevel(Level.INFO);
 		//Logger.getLogger("com.crawljax.plugins").setLevel(Level.DEBUG);
 		//Logger.getLogger("com.crawljax.core.state").setLevel(Level.INFO);
-				
+		
+		//LOGGER.info(System.getProperty("java.class.path"));
+		
 		File dir = new File(projectDir);
-		if(!dir.exists()) {
+		if(!dir.exists() && !dir.mkdir()) {
 			LOGGER.fatal("Project logging directory does not exist.", new RuntimeException());
 		}
 		
@@ -127,9 +129,16 @@ public class CrawlDriver {
 		//Go
 		for(int level : levels) {
 			PrecrawlLogin loginPlugin = new PrecrawlLogin(rootURL+"login.php", projectDir+"LoginSpec.xml", level);
-			CrawlOverview crawlOverview = new CrawlOverview();
-			crawlOverview.setOutputFolder(projectDir+"lvl"+level+"/");
 			
+			String levelPath = projectDir+"lvl"+level+"/";
+			File levelDir = new File(levelPath);
+			if(!levelDir.exists() && !levelDir.mkdir()) {
+				LOGGER.fatal("Could not create level logging directory.", new RuntimeException());
+			}
+			
+			//CrawlOverview crawlOverview = new CrawlOverview();
+			//crawlOverview.setOutputFolder(levelPath);
+					
 			for(int i=0; i<passesPerLevel; ++i) {
 
 				CrawlSpecification specification = new CrawlSpecification(rootURL);
@@ -164,7 +173,7 @@ public class CrawlDriver {
 				configuration.addPlugin(ifp);
 				configuration.addPlugin(loginPlugin);
 				
-				configuration.addPlugin(crawlOverview);
+				//configuration.addPlugin(crawlOverview);
 				
 				/*
 				 * Proxy plugins 
@@ -177,7 +186,7 @@ public class CrawlDriver {
 				//proxy.addPlugin(new ProxyPageTokenizer());
 				proxy.addPlugin(new ProxyLogger());
 				configuration.addPlugin(proxy);
-				configuration.addPlugin(new StateLogger());
+				configuration.addPlugin(new StateLogger(levelPath+"states/"));
 				
 				/*
 				 * PageTree plugins
