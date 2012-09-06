@@ -1,0 +1,58 @@
+pom.xml
+ -Change Selenium version to 2.25.0 (Needed for current Firefox browser)
+
+com.crawljax.browser.WebDriverBackedEmbeddedBrowser:
++RegEx filters (kinda like ProxyPageTokenizer) probably not needed
+
+com.crawljax.browser.WebDriverBackedEmbeddedBrowser:
++RegEx filters
+
+com.crawljax.core.Crawler
+309: change ctor for State changes
+431: remove check on searchForCandidateElements (allowing it to be run earlier)
+678+ Added for State changes
+
+com.crawljax.core.CrawljaxConfiguration
++RegEx filters
+
+com.crawljax.core.CrawljaxConfigurationReader
++RegEx filters
+
+com.crawljax.core.CrawlSpecification
+means to pass which stateVertixIdentifier through to the states
+80: sets default
+467+: getter/setter for stateVertixIdentifier
+
+com.crawljax.core.CrawlSpecificationReader
+135+: means to pass which stateVertixIdentifier through to the states
+
++com.crawljax.core.RegularExpressionVertixParser
+Added from UVA code
+
++com.core.plugin.CandidateScreenerPlugin
+NOT USED: TO DELETE
+
+com.core.plugin.CrawljaxPluginsUtil
+285+: Hooks for new plugins
+
++com.core.plugin.DetectCloneStatePlugin
+New plugin for manipulating state graph
+
++com.core.plugin.OnAddStateVertixPlugin
+New plugin for manipulating state graph
+
+com.core.state.Eventable
+249: Forward states to ensure deleted states are deleted
+259: '' ''
+
+com.core.state.StateFlowGraph
+Lots of state graph changes
+
+com.core.state.StateMachine
+131: make sure add edge to clone states
+
+com.core.state.StateVertix
+Lots of changes to accomodate StateVertixIdentifier
+
+com.core.state.identifier.*
+New. Interface and Default Crawljax StrippedDom
