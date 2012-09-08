@@ -136,8 +136,8 @@ public class CrawlDriver {
 				LOGGER.fatal("Could not create level logging directory.", new RuntimeException());
 			}
 			
-			//CrawlOverview crawlOverview = new CrawlOverview();
-			//crawlOverview.setOutputFolder(levelPath);
+			CrawlOverview crawlOverview = new CrawlOverview();
+			crawlOverview.setOutputFolder(levelPath);
 					
 			for(int i=0; i<passesPerLevel; ++i) {
 
@@ -173,7 +173,7 @@ public class CrawlDriver {
 				configuration.addPlugin(ifp);
 				configuration.addPlugin(loginPlugin);
 				
-				//configuration.addPlugin(crawlOverview);
+				configuration.addPlugin(crawlOverview);
 				
 				/*
 				 * Proxy plugins 
