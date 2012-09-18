@@ -47,6 +47,7 @@ public class StateFlowGraph {
 	 */
 	public StateFlowGraph() {
 		sfg = new DirectedMultigraph<StateVertix, Eventable>(Eventable.class);
+		stateForwardMap.clear();
 	}
 
 	/**
@@ -535,8 +536,10 @@ public class StateFlowGraph {
 			e2.setIdentification(e.getIdentification());
 			e2.setRelatedFormInputs(e.getRelatedFormInputs());
 		} catch (CrawljaxException err) {
-			// TODO Auto-generated catch block
 			err.printStackTrace();
+		} catch (Exception err) {
+			err.printStackTrace();
+			System.exit(3);
 		}
 		
 	}
