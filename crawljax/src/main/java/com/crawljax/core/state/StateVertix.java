@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The state vertix class which represents a state in the browser. This class implements the
@@ -40,6 +41,11 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class StateVertix implements Serializable {
 
+	//DEBUGGING
+	private static AtomicInteger ctr;
+	private static int unique_id;
+	
+	
 	private static final long serialVersionUID = 123400017983488L;
 	private static final Logger LOGGER = Logger.getLogger(StateVertix.class);
 	private long id;
@@ -93,6 +99,9 @@ public class StateVertix implements Serializable {
 		//(why set this as Deprecated
 		this.extension = new StrippedDomVertixIdentifier();
 		((StrippedDomVertixIdentifier) this.extension).init(this, dom);
+		
+		if(ctr==null) ctr = new AtomicInteger(10000);
+		unique_id = ctr.getAndIncrement();
 	}
 
 	/**
@@ -113,6 +122,9 @@ public class StateVertix implements Serializable {
 		this.extension = crawler.getController().getConfigurationReader()
 				.getCrawlSpecificationReader().getStateVertixIdentifier().getNew();
 		this.extension.init(this, crawler);
+		
+		if(ctr==null) ctr = new AtomicInteger(10000);
+		unique_id = ctr.getAndIncrement();
 	}
 
 	/**
@@ -472,5 +484,9 @@ public class StateVertix implements Serializable {
 					getUnprocessedCandidateElements());
 			haveRunPreStateCrawlingPlugins = true;
 		}
+	}
+	
+	public String getTextIdentifier() {
+		return toString() + "[" + unique_id + "]";
 	}
 }

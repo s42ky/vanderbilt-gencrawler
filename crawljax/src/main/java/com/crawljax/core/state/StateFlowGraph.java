@@ -528,7 +528,8 @@ public class StateFlowGraph {
 				e2 = sfg.addEdge(stateKeep, e.getTargetStateVertix());
 			}
 			
-			LOGGER.debug("Added edge from "+e2.getSourceStateVertix()+" to "+e2.getTargetStateVertix());
+			LOGGER.debug("Added edge from "+e2.getSourceStateVertix().getTextIdentifier()
+					+" to "+e2.getTargetStateVertix().getTextIdentifier());
 			
 			e2.setElement(e.getElement());
 			e2.setEventType(e.getEventType());
@@ -548,6 +549,5 @@ public class StateFlowGraph {
 		StateVertix out = stateForwardMap.get(in.getName());
 		if(out==null) return in;
 		else return out;
-		
 	}
 }
