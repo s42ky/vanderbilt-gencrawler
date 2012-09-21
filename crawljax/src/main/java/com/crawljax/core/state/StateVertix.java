@@ -40,11 +40,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version $Id: StateVertix.java 435 2010-09-13 10:31:18Z slenselink@google.com $
  */
 public class StateVertix implements Serializable {
-
 	//DEBUGGING
 	private static AtomicInteger ctr;
-	private static int unique_id;
-	
+	private int unique_id;
 	
 	private static final long serialVersionUID = 123400017983488L;
 	private static final Logger LOGGER = Logger.getLogger(StateVertix.class);
@@ -484,6 +482,11 @@ public class StateVertix implements Serializable {
 					getUnprocessedCandidateElements());
 			haveRunPreStateCrawlingPlugins = true;
 		}
+	}
+	
+	//Used this instead of the existing ID, because not sure what that's used for
+	public int getUniqueIdentifier() {
+		return unique_id;
 	}
 	
 	public String getTextIdentifier() {

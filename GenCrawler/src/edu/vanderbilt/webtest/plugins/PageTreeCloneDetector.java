@@ -123,7 +123,7 @@ public class PageTreeCloneDetector implements DetectCloneStatePlugin, OnAddState
 				sb.append("\t");
 				sb.append(k2.toString());
 				sb.append("\n\t\t");
-				sb.append(stateVertixLookup.get(k1, k2));
+				sb.append(stateVertixLookup.get(k1, k2).getTextIdentifier());
 				sb.append("\n");
 			}
 		}
@@ -138,7 +138,7 @@ public class PageTreeCloneDetector implements DetectCloneStatePlugin, OnAddState
 				sb.append(" / out ");
 				sb.append(ParameterDomainUpdater.getGraph().getOutgoingClickables(vtx).size());
 				sb.append("\n\t");
-				sb.append(vtx.getIdentifier().getIdentifierString());
+				sb.append(vtx.getTextIdentifier());
 				
 				PageTreeVertixIdentifier ptvi = (PageTreeVertixIdentifier) vtx.getIdentifier();
 				sb.append("\n\t");

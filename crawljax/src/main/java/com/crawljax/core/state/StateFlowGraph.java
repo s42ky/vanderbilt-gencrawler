@@ -33,7 +33,7 @@ public class StateFlowGraph {
 
 	private final DirectedGraph<StateVertix, Eventable> sfg;
 	
-	private static HashMap<String, StateVertix> stateForwardMap = new HashMap<String,StateVertix>();
+	private static HashMap<Integer, StateVertix> stateForwardMap = new HashMap<Integer,StateVertix>();
 	
 
 	/**
@@ -47,7 +47,7 @@ public class StateFlowGraph {
 	 */
 	public StateFlowGraph() {
 		sfg = new DirectedMultigraph<StateVertix, Eventable>(Eventable.class);
-		stateForwardMap.clear();
+		//stateForwardMap.clear();
 	}
 
 	/**
@@ -471,7 +471,8 @@ public class StateFlowGraph {
 				Eventable e = (Eventable) o;
 				copyOver(e, vKeep, true);
 				try {
-					LOGGER.debug("Removing edge from "+e.getSourceStateVertix()+" to "+e.getTargetStateVertix());
+					LOGGER.debug("Removing edge from "+e.getSourceStateVertix().getTextIdentifier()
+							+" to "+e.getTargetStateVertix().getTextIdentifier());
 				} catch (CrawljaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -490,7 +491,8 @@ public class StateFlowGraph {
 				
 				copyOver(e, vKeep, false);
 				try {
-					LOGGER.debug("Removing edge from "+e.getSourceStateVertix()+" to "+e.getTargetStateVertix());
+					LOGGER.debug("Removing edge from "+e.getSourceStateVertix().getTextIdentifier()
+							+" to "+e.getTargetStateVertix().getTextIdentifier());
 				} catch (CrawljaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -499,10 +501,10 @@ public class StateFlowGraph {
 			}
 		}
 		//Note the forwarding
-		stateForwardMap.put(vDiscard.getName(), vKeep);
+		stateForwardMap.put(vDiscard.getUniqueIdentifier(), vKeep);
 		
 		//We need to update map
-		for(Entry<String, StateVertix> pair : stateForwardMap.entrySet()) {
+		for(Entry<Integer, StateVertix> pair : stateForwardMap.entrySet()) {
 			if(pair.getValue().getName().equals(vDiscard.getName()))
 				pair.setValue(vKeep);
 		}
@@ -514,40 +516,55 @@ public class StateFlowGraph {
 		vDiscard.setName(vDiscard.getName().replace("state", "delete"));
 		
 		//Note the (post-rename) forwarding
-		stateForwardMap.put(vDiscard.getName(), vKeep);
+		//stateForwardMap.put(vDiscard.getName(), vKeep);
 		
 		return vKeep;
 	}
 	
 	private void copyOver(Eventable e, StateVertix stateKeep, boolean isTo) {
 		try {
-			Eventable e2;
+			Eventable e2 = new Eventable(e.getIdentification(), e.getEventType());
+			boolean success;
 			if(isTo) {
-				e2 = sfg.addEdge(e.getSourceStateVertix(), stateKeep);
+				success = addEdge(e.getSourceStateVertix(), stateKeep, e2);
 			} else {
-				e2 = sfg.addEdge(stateKeep, e.getTargetStateVertix());
+				success = addEdge(stateKeep, e.getTargetStateVertix(), e2);
 			}
+			
 			
 			LOGGER.debug("Added edge from "+e2.getSourceStateVertix().getTextIdentifier()
 					+" to "+e2.getTargetStateVertix().getTextIdentifier());
+			if(!success) {
+				LOGGER.info("Edge already exists");
+				//TODO - This is where we would add multiple item clicks for an edge
+				//(we'd probably need to extend Eventable to store the info)
+			}
+			
 			
 			e2.setElement(e.getElement());
-			e2.setEventType(e.getEventType());
 			e2.setId(e.getId());
-			e2.setIdentification(e.getIdentification());
 			e2.setRelatedFormInputs(e.getRelatedFormInputs());
 		} catch (CrawljaxException err) {
 			err.printStackTrace();
 		} catch (Exception err) {
-			err.printStackTrace();
+			try {
+				LOGGER.error("Eventable: "+e.getSourceStateVertix().getTextIdentifier()+" to "
+						+e.getTargetStateVertix().getTextIdentifier());
+				LOGGER.error("Keep: "+stateKeep.getTextIdentifier()+" / isTo? "+isTo);
+			} catch (CrawljaxException e1) {
+				//We're exiting anyways...
+				LOGGER.error("Error reading Eventable");
+			}
+			LOGGER.error("Exception caught. Exit with 3.", err);
 			System.exit(3);
 		}
 		
 	}
 	
 	public static StateVertix forward(StateVertix in) {
-		StateVertix out = stateForwardMap.get(in.getName());
+		StateVertix out = stateForwardMap.get(in.getUniqueIdentifier());
 		if(out==null) return in;
 		else return out;
+		
 	}
 }
