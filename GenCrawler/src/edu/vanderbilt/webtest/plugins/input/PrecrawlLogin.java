@@ -97,19 +97,23 @@ public class PrecrawlLogin implements PreCrawlingPlugin {
 		WebElement lastElement = null;
 		//Go through specs
 		for(Entry<String, String> field : specifications.entrySet()) {
-			WebElement e = browser.getWebElement(new Identification(How.name, field.getKey()));
-			if(e==null) {
+			try{
+				WebElement e = browser.getWebElement(new Identification(How.name, field.getKey()));
+				if(e==null) {
+					LOGGER.warn("Could not find element "+field.getKey());
+					continue;
+				}
+				
+				String val = userInfo.get(field.getValue());
+				if(val==null) {
+					LOGGER.warn("No database info for field "+field.getValue());
+					continue;
+				}
+				e.sendKeys(val);
+				lastElement = e;
+			}catch(org.openqa.selenium.NoSuchElementException e){
 				LOGGER.warn("Could not find element "+field.getKey());
-				continue;
 			}
-			
-			String val = userInfo.get(field.getValue());
-			if(val==null) {
-				LOGGER.warn("No database info for field "+field.getValue());
-				continue;
-			}
-			e.sendKeys(val);
-			lastElement = e;
 		}
 		
 		if(lastElement == null) {
@@ -117,12 +121,31 @@ public class PrecrawlLogin implements PreCrawlingPlugin {
 			return;
 		}
 		
+		
+		Identification rootPath = new Identification(Identification.How.xpath, "/html");
+		WebElement root = browser.getWebElement(rootPath);
+		List<WebElement> forms = root.findElements(By.tagName("form"));
+		LOGGER.info("Num of forms = "+forms.size());
+		for(WebElement e : forms){
+			LOGGER.info("action = "+e.getAttribute("action"));
+			if( e.getAttribute("action").contains( specifications.get("action")) ){
+				e.submit();
+				return;
+			}
+		}
+		
+		
 		WebElement form = browser.getWebElement(new Identification(How.tag, "form"));
+
+		
 		if(form==null) {
 			LOGGER.warn("Could not find form for submit call.");
 			return;
 		}
 		form.submit();
+		
+
+
 	}
 	
 	@SuppressWarnings("rawtypes")
